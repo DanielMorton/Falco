@@ -1,44 +1,9 @@
 import argparse
 import tensorflow as tf
 from meta import read_meta
-from enet import get_callbacks, get_model, get_optimizer
+from enet import detect_hardware, get_callbacks, get_model
+from enet import get_optimizer, make_model_file, top_2_accuracy, top_5_accuracy
 from tfrecord import get_datasets, TRAIN_DIR, TEST_DIR
-
-
-def detect_hardware():
-    auto = tf.data.experimental.AUTOTUNE
-    # Detect hardware, return appropriate distribution strategy
-    try:
-        tpu = tf.distribute.cluster_resolver.TPUClusterResolver()
-    except ValueError:
-        tpu = None
-
-    if tpu:
-        tf.config.experimental_connect_to_cluster(tpu)
-        tf.tpu.experimental.initialize_tpu_system(tpu)
-        strategy = tf.distribute.experimental.TPUStrategy(tpu)
-    else:
-        strategy = tf.distribute.get_strategy()
-
-    return strategy, auto
-
-
-def make_model_file(args):
-    best_model_file = f"{args['dir']}/"
-    best_model_file += f"enet{args['enet']}"
-    best_model_file += f"_r{args['res']}"
-    best_model_file += f"_{args['lr_log']}"
-    best_model_file += f"_{args['lr_coeff']}"
-    best_model_file += f"_{args['decay']}.h5"
-    return best_model_file
-
-
-def top_2_accuracy(y_true, y_pred):
-    return tf.keras.metrics.top_k_categorical_accuracy(y_true, y_pred, 2)
-
-
-def top_5_accuracy(y_true, y_pred):
-    return tf.keras.metrics.top_k_categorical_accuracy(y_true, y_pred, 5)
 
 
 def main():

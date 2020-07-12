@@ -3,6 +3,16 @@ from .efficientnet import efficientnet
 from enet import DROPOUT
 
 
+def make_model_file(args):
+    best_model_file = f"{args['dir']}/"
+    best_model_file += f"enet{args['enet']}"
+    best_model_file += f"_r{args['res']}"
+    best_model_file += f"_{args['lr_log']}"
+    best_model_file += f"_{args['lr_coeff']}"
+    best_model_file += f"_{args['decay']}.h5"
+    return best_model_file
+
+
 def top_2_accuracy(y_true, y_pred):
     return tf.keras.metrics.top_k_categorical_accuracy(y_true, y_pred, 2)
 

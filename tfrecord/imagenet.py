@@ -4,7 +4,7 @@ from tfrecord import TARGET_DIMS
 
 def decode_jpeg(example,
                 category_count,
-                train=False):
+                boxes=False):
     features = {
         "filename": tf.io.FixedLenFeature([], tf.string),
 
@@ -34,7 +34,7 @@ def decode_jpeg(example,
     image = tf.reshape(tf.cast(decoded, tf.float32) / 255, img_dim)
     oh = tf.one_hot(example['terminal_id'], depth=category_count)
 
-    if train:
+    if boxes:
         xmin = example['xmin']
         ymin = example['ymin']
         xmax = example['xmax']
@@ -94,7 +94,7 @@ def distorted_bounding_box_crop(image,
 
 
 def parse_train_tfrecord(example, category_count, target_size):
-    image, oh, bbox = decode_jpeg(example, category_count, train=True)
+    image, oh, bbox = decode_jpeg(example, category_count, boxes=True)
     image = distorted_bounding_box_crop(image, bbox)
     image.set_shape([None, None, 3])
     image = tf.image.resize(image, (target_size, target_size))
@@ -147,3 +147,5 @@ def get_datasets(train_files,
                        c_size=c_size,
                        auto=auto).batch(batch_size).prefetch(auto)
     return train, val
+
+
