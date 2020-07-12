@@ -43,7 +43,7 @@ def main():
     ground_truth = np.concatenate([v.numpy() for v in list(test_data.map(lambda image, label: label))])
     pred = model.predict(test_data.map(lambda image, label: image))
     correct_pred = tf.keras.metrics.categorical_accuracy(ground_truth, pred)
-    accuracy = tf.math.reduce_sum(correct_pred).numpy() /ground_truth.shape[0]
+    accuracy = tf.math.reduce_sum(correct_pred).numpy()/ground_truth.shape[0]
     print(f"Model accuracy = {100* np.round(accuracy, 3)}")
 
 

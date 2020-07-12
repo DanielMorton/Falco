@@ -6,7 +6,7 @@ def read_classes(bird_dir, terminal_levels):
     def make_annotation(s):
         try:
             return s.split('(')[1].split(')')[0]
-        except:
+        except Exception as e:
             return None
 
     classes = pd.read_table(f'{bird_dir}/{CLASS_FILE}', header=None)

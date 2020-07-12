@@ -61,4 +61,3 @@ def get_test_datasets(test_files, batch_size, category_count, auto, resolution=N
     else:
         load_dataset(test_files, category_count,
                      auto, resolution=resolution).batch(batch_size).prefetch(auto)
-

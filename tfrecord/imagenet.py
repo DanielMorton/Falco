@@ -147,5 +147,3 @@ def get_datasets(train_files,
                        c_size=c_size,
                        auto=auto).batch(batch_size).prefetch(auto)
     return train, val
-
-

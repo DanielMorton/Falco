@@ -30,7 +30,7 @@ def write_shards(data,
         for idx, example in data.iterrows():
             if idx % 1000 == 0 and log_progress:
                 print(f'On image {idx} of {data.shape[0]}')
-            output_train[idx % shards].write(create_tf_example(example=example).SerializeToString())
+            output_train[idx % shards].write(create_tf_example(bird_dir, example=example).SerializeToString())
 
 
 def write_records(train_data,
@@ -52,7 +52,3 @@ def write_records(train_data,
                  bird_dir=bird_dir,
                  output_dir=TEST_DIR,
                  log_progress=log_progress)
-
-
-
-
