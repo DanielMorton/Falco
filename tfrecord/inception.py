@@ -152,8 +152,12 @@ def parse_val_tfrecord(example, category_count, target_size):
     return image, 0.9 * oh + 0.1 / category_count
 
 
-def load_dataset(filenames, category_count, res, auto, train=False):
-    """Create training or validation tensorflow dataset.
+def load_dataset(filenames,
+                 category_count,
+                 res,
+                 auto,
+                 train=False):
+    """Create training or validation Tensorflow Dataset.
 
     :param filenames: List of tfrecord files containing raw data.
     :param category_count: Number of prediction categories.

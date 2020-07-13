@@ -7,6 +7,7 @@ from tfrecord import get_datasets, TRAIN_DIR, TEST_DIR
 
 
 def main():
+    """Builds and trains EfficientNet models for Cornell NABirds data."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--batch", default=8, type=int,
                     help="Training batch size.")

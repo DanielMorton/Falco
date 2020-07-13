@@ -7,6 +7,7 @@ from tfrecord import get_test_datasets, TEST_DIR
 
 
 def main():
+    """Evaluates selected model on NABirds Test data. Outputs accuracy to console."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--crop", default=False, type=bool,
                     help="Use bounding box crops for evaluation.")

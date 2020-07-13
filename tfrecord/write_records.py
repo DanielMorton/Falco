@@ -5,6 +5,14 @@ from tfrecord import TRAIN_DIR, TEST_DIR
 
 
 def open_sharded_output_tfrecords(exit_stack, base_path, num_shards):
+    """Open tfrecord shard files to write record data.
+    :param exit_stack: Manager for exit callbacks.
+    :param base_path: Directory in which to write files.
+    :param num_shards: Number of shards to write.
+
+    :return: List of objects for writing data to tfrecord shards.
+    """
+
     tf_record_output_filenames = [
         '{}/tfrecord-{:05d}-of-{:05d}'.format(base_path, idx, num_shards)
         for idx in range(num_shards)
@@ -23,6 +31,14 @@ def write_shards(data,
                  bird_dir,
                  output_dir,
                  log_progress=False):
+    """Writes tfrecord data to shards.
+
+    :param data: DataFrame containing files names and metadata for images to add to tfrecords.
+    :param shards: Number of shards.
+    :param bird_dir: Directory containing NABirds data.
+    :param output_dir: Directory in which shards are written.
+    :param log_progress: Write status to console.
+    """
     with contextlib2.ExitStack() as tf_record_close_stack:
         output_train = open_sharded_output_tfrecords(tf_record_close_stack,
                                                      base_path=f'{bird_dir}/{output_dir}',
@@ -38,6 +54,14 @@ def write_records(train_data,
                   bird_dir,
                   file_size,
                   log_progress=False):
+    """Write training and test data for NABirds to tfrecords.
+
+    :param train_data: DataFrame of metadata for training.
+    :param test_data: DataFrame of metadata for testing.
+    :param bird_dir: Directory containing NABirds data.
+    :param file_size: Number of records per shard.
+    :param log_progress: Write status to console.
+    """
     train_shards = train_data.shape[0] // file_size + 1
     test_shards = test_data.shape[0] // file_size + 1
 

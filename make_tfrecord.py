@@ -4,6 +4,7 @@ from tfrecord.write_records import write_records
 
 
 def main():
+    """Creates tfrecords from NA Birds training and test data."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", required=True, type=str,
                     help="Directory containing Cornell NABird Data")
