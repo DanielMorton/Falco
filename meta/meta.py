@@ -8,6 +8,7 @@ from .train_test import read_train_test
 
 
 def read_meta(bird_dir):
+    """Loads all image meta data and performs joins to create train and test DataFrames."""
     hierarcy, parent_map, top_levels, terminal_levels = read_hierarchy(bird_dir=bird_dir)
     class_labels = read_class_labels(bird_dir=bird_dir,
                                      top_levels=top_levels,

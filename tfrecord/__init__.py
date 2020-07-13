@@ -1,6 +1,6 @@
 from .create_example import create_tf_example
-from .imagenet import get_datasets
-from .imagenet_test import get_test_datasets
+from .inception import get_datasets
+from .inception_test import get_test_datasets
 
 TARGET_DIMS = [224, 240, 260, 300, 380, 456, 528, 600]
 TRAIN_DIR = 'tf_train'

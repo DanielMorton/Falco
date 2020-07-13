@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tfrecord import TARGET_DIMS
-from .imagenet import decode_jpeg
+from .inception import decode_jpeg
 
 
 def load_dataset(filenames, category_count, auto, resolution=None, crop=False, free=False):

@@ -3,6 +3,9 @@ from meta import HIERARCHY_FILE
 
 
 def read_hierarchy(bird_dir):
+    """Loads table of class hierarchies. Returns hierarchy table
+    parent-child class map, top class levels, and bottom class levels.
+    """
     hierarchy = pd.read_table(f'{bird_dir}/{HIERARCHY_FILE}', sep=' ',
                               header=None)
     hierarchy.columns = ['child', 'parent']

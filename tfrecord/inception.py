@@ -5,6 +5,7 @@ from tfrecord import TARGET_DIMS
 def decode_jpeg(example,
                 category_count,
                 boxes=False):
+    """Reads data from single example in tfrecord."""
     features = {
         "filename": tf.io.FixedLenFeature([], tf.string),
 
@@ -47,6 +48,7 @@ def decode_jpeg(example,
 
 @tf.function
 def distort_color(image):
+    """Performs InceptionV3 style color distortion in preprocessing."""
     image = tf.image.random_flip_left_right(image)
     color_ordering = tf.random.uniform([], maxval=4, dtype=tf.int32)
     if color_ordering == 0:
@@ -80,6 +82,21 @@ def distorted_bounding_box_crop(image,
                                 aspect_ratio_range=(0.75, 1.33),
                                 area_range=(0.1, 1.0),
                                 max_attempts=100):
+    """Performs InceptionV3 style random cropping. Returns a subset of the image
+    in the given aspect ratio range, containing a percentage of the total image in
+    the given range, and containing at least the appropriate amount of the image
+    contained in the bounding box.
+
+    :param image: Original image.
+    :param bbox: Tensor containing all bounding boxes for image.
+    :param min_object_covered: Minimum percentage of bounding box coverage in returned image.
+    :param aspect_ratio_range: Range of allowed aspect ratios in returned image.
+    :param area_range: Range of total image percentage contained in total image.
+    :param max_attempts: Maximum number of tries before returning full image as defalut.
+
+    :return: Cropped image.
+    """
+
     bbox_begin, bbox_size, distort_bbox = tf.image.sample_distorted_bounding_box(
         tf.shape(image),
         bounding_boxes=bbox,
@@ -94,6 +111,16 @@ def distorted_bounding_box_crop(image,
 
 
 def parse_train_tfrecord(example, category_count, target_size):
+    """Reads and pre-processes images from training data.
+    Adds label smoothing to response variable.
+
+    :param example: Single example from tfrecord.
+    :param category_count: Number of prediction categories.
+    :param target_size: Final size of training image.
+
+    :return: Training image and response variable.
+    """
+
     image, oh, bbox = decode_jpeg(example, category_count, boxes=True)
     image = distorted_bounding_box_crop(image, bbox)
     image.set_shape([None, None, 3])
@@ -107,6 +134,16 @@ def parse_train_tfrecord(example, category_count, target_size):
 
 
 def parse_val_tfrecord(example, category_count, target_size):
+    """Reads and pre-processes images from validation data.
+    Adds label smoothing to response variable.
+
+    :param example: Single example from tfrecord.
+    :param category_count: Number of prediction categories.
+    :param target_size: Final size of validation image.
+
+    :return: Validation image and response variable.
+    """
+
     image, oh = decode_jpeg(example, category_count)
 
     image = tf.keras.applications.imagenet_utils.preprocess_input(image * 255,
@@ -115,27 +152,49 @@ def parse_val_tfrecord(example, category_count, target_size):
     return image, 0.9 * oh + 0.1 / category_count
 
 
-def load_dataset(filenames, category_count, c_size, auto, train=False):
+def load_dataset(filenames, category_count, res, auto, train=False):
+    """Create training or validation tensorflow dataset.
+
+    :param filenames: List of tfrecord files containing raw data.
+    :param category_count: Number of prediction categories.
+    :param res: Resolution to use for training.
+    :param auto: Number of parallel calls to the data loader.
+    :param train: Return training data if true, validation data if false.
+
+    :return: Tensorflow Dataset of training or validation data.
+    """
     records = tf.data.TFRecordDataset(filenames,
                                       num_parallel_reads=auto)
     if train:
-        return records.map(lambda r: parse_train_tfrecord(r, category_count, TARGET_DIMS[c_size]),
+        return records.map(lambda r: parse_train_tfrecord(r, category_count, TARGET_DIMS[res]),
                            num_parallel_calls=auto)
     else:
-        return records.map(lambda r: parse_val_tfrecord(r, category_count, TARGET_DIMS[c_size]),
+        return records.map(lambda r: parse_val_tfrecord(r, category_count, TARGET_DIMS[res]),
                            num_parallel_calls=auto)
 
 
 def get_datasets(train_files,
                  test_files,
                  category_count,
-                 c_size,
+                 res,
                  batch_size,
                  auto,
                  shuffle=2048):
+    """Returns training and validation Tensorflow Datasets.
+
+    :param train_files: List of training data files.
+    :param test_files: List of validation data files.
+    :param category_count: Number of prediction categories.
+    :param res: Image resolution.
+    :param batch_size: Batch size for training and validation.
+    :param auto: Number of parallel calls to the data loader.
+    :param shuffle: Number of records to shuffle in training.
+
+    :return: Training and Validation Tensorflow datasets.
+    """
     train = load_dataset(train_files,
                          category_count,
-                         c_size=c_size,
+                         res=res,
                          train=True,
                          auto=auto).repeat() \
         .shuffle(shuffle) \
@@ -144,6 +203,6 @@ def get_datasets(train_files,
 
     val = load_dataset(test_files,
                        category_count,
-                       c_size=c_size,
+                       res=res,
                        auto=auto).batch(batch_size).prefetch(auto)
     return train, val

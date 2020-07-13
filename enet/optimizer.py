@@ -4,6 +4,15 @@ from enet import EPSILON, MOMENTUM
 
 
 def get_optimizer(opt):
+    """Returns the optimizer to use in training.
+
+    :param opt: Optimizer name.
+    :type opt: str
+
+    :return: Optimizer for training.
+    :rtype: tf.keras.optimizers.Optimizer
+    """
+
     if opt == 'rms':
         return tf.keras.optimizers.RMSprop(momentum=MOMENTUM,
                                            epsilon=EPSILON)

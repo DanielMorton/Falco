@@ -3,6 +3,7 @@ from meta import CLASS_LABEL_FILE
 
 
 def read_class_labels(bird_dir, top_levels, parent_map):
+    """Loads table of image IDs and labels. Add top level ID to table."""
     def get_class(l):
         return l if l in top_levels else get_class(parent_map[l])
 

@@ -3,6 +3,9 @@ from meta import CLASS_FILE
 
 
 def read_classes(bird_dir, terminal_levels):
+    """Loads DataFrame with class labels. Returns full class table
+    and table containing lowest level classes.
+    """
     def make_annotation(s):
         try:
             return s.split('(')[1].split(')')[0]

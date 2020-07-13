@@ -42,7 +42,7 @@ def main():
     train_ds, test_ds = get_datasets(train_files=train_files,
                                      test_files=test_files,
                                      category_count=category_count,
-                                     c_size=args["res"],
+                                     res=args["res"],
                                      batch_size=batch_size,
                                      auto=auto)
 

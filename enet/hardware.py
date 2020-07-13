@@ -2,6 +2,7 @@ import tensorflow as tf
 
 
 def detect_hardware():
+    """Detects the presence of TPU or GPU."""
     auto = tf.data.experimental.AUTOTUNE
     # Detect hardware, return appropriate distribution strategy
     try:
